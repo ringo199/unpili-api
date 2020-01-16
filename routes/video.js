@@ -7,6 +7,7 @@ const {
   getOneVideo
 } = require('../controller/video')
 const { SuccessModel, ErrorModel } = require('../model/resModel')
+const loginCheck = require('../middleware/loginCheck')
 
 router.prefix('/api/video')
 
@@ -29,14 +30,14 @@ router.get('/oneVideo', async function (ctx, next) {
   }
 })
 
-router.post('/save', async function (ctx, next) {
+router.post('/save', loginCheck, async function (ctx, next) {
   const body = ctx.request.body
 
   const data = await saveVideo(body)
   ctx.body = new SuccessModel(data)
 })
 
-router.post('/upload', async function (ctx, next) {
+router.post('/upload', loginCheck, async function (ctx, next) {
   // 上传单个文件
   const file = ctx.request.files.file // 获取上传文件
 

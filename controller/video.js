@@ -5,6 +5,8 @@ const path = require('path')
 const fs = require('fs')
 const { genFileName } = require('../utils/cryp')
 
+const env = process.env.NODE_ENV
+
 const getList = async (author, keyword) => {
     let sql = `select * from videos where 1=1 `
     if (author) {
@@ -14,19 +16,6 @@ const getList = async (author, keyword) => {
         sql += `and title like '%${keyword}%' `
     }
     sql += `order by createTime desc;`
-    // return new Promise((resolve, reject) => {
-    //   resolve(new ListModel({
-    //     rows: [{
-    //       id: '1',
-    //       cover: '123',
-    //       title: 'test1',
-    //       url: '111'
-    //     }],
-    //     pageNo: 1,
-    //     pageSize: 10,
-    //     total: 1
-    //   }), 'success')
-    // })
     const rows = await exec(sql)
     return new ListModel({
       rows,
@@ -46,7 +35,6 @@ const getOneVideo = async (id) => {
   // }
   sql += `order by createTime desc;`
   const [data] = await exec(sql)
-  console.log('data', data, id);
 
   return {
     code: 0,
@@ -56,9 +44,7 @@ const getOneVideo = async (id) => {
 }
 
 const saveVideo =  async (VideoData = {}) => {
-  console.log('VideoData', VideoData);
-  
-  // VideoData 是一个视频对象，包含 title content author 属性
+  // VideoData 是一个视频对象，包含 title cover url 属性
   const title = xss(VideoData.title)
   // console.log('title is', title)
   const cover = xss(VideoData.cover)
@@ -83,8 +69,13 @@ const uploadVideo = async (file) => {
     let fileNameArr = file.name.split('.')
     let fileType = fileNameArr[fileNameArr.length - 1]
     const fileName = genFileName(file.name) + '.' + fileType
-    let filePath = path.join('/home/file') + `/${fileName}`
-    // let filePath = path.join(__dirname + '../public') + `/${fileName}`
+    let filePath
+    if (env === 'dev') {
+      path.join(__dirname + '../public') + `/${fileName}`
+    }
+    if (env === 'production') {
+      path.join('/home/file') + `/${fileName}`
+    }
     // 创建可写流
     const upStream = fs.createWriteStream(filePath)
     // 可读流通过管道写入可写流

@@ -15,13 +15,15 @@ const koaBody = require('koa-body')
 
 const index = require('./routes/index')
 const video = require('./routes/video')
+const user = require('./routes/user')
 
-// const { REDIS_CONF } = require('./conf/db')
+const { REDIS_CONF } = require('./conf/db')
+
+const ENV = process.env.NODE_ENV
 
 // error handler
 onerror(app)
 
-app.use(cors())
 app.use(koaBody({
   multipart: true,
   formidable: {
@@ -49,10 +51,10 @@ app.use(async (ctx, next) => {
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
 })
 
-const ENV = process.env.NODE_ENV
 if (ENV !== 'production') {
   // 开发环境 / 测试环境
   app.use(morgan('dev'));
+  app.use(cors());
 } else {
   // 线上环境
   const logFileName = path.join(__dirname, 'logs', 'access.log')
@@ -64,25 +66,26 @@ if (ENV !== 'production') {
   }));
 }
 
-// // session 配置
-// app.keys = ['WJiol#23123_']
-// app.use(session({
-//   // 配置 cookie
-//   cookie: {
-//     path: '/',
-//     httpOnly: true,
-//     maxAge: 24 * 60 * 60 * 1000
-//   },
-//   // 配置 redis
-//   store: redisStore({
-//     // all: '127.0.0.1:6379'   // 写死本地的 redis
-//     // all: `${REDIS_CONF.host}:${REDIS_CONF.port}`
-//   })
-// }))
+// session 配置
+app.keys = ['WJiol#23123_']
+app.use(session({
+  // 配置 cookie
+  cookie: {
+    path: '/',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000
+  },
+  // 配置 redis
+  store: redisStore({
+    // all: '127.0.0.1:6379'   // 写死本地的 redis
+    all: `${REDIS_CONF.host}:${REDIS_CONF.port}`
+  })
+}))
 
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(video.routes(), video.allowedMethods())
+app.use(user.routes(), user.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {
