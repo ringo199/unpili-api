@@ -1,6 +1,7 @@
 const router = require('koa-router')()
-const { login, register } = require('../controller/user')
+const { login, register, logout } = require('../controller/user')
 const { SuccessModel, ErrorModel } = require('../model/resModel')
+const loginCheck = require('../middleware/loginCheck')
 
 router.prefix('/api/user')
 
@@ -12,19 +13,37 @@ router.post('/login', async function (ctx, next) {
         ctx.session.username = data.username
         ctx.session.nickname = data.nickname
 
-        ctx.body = new SuccessModel()
+        ctx.body = new SuccessModel({ ...data }, '登录成功')
+        console.log(ctx.body);
+        
         return
     }
     ctx.body = new ErrorModel('登录失败')
-    console.log('login', ctx.body);
-    
 })
 
 router.post('/register', async function (ctx, next) {
-    const body = ctx.request.body
+    try {
+        const body = ctx.request.body
 
-    const data = await register(body)
-    ctx.body = new SuccessModel(data)
+        const data = await register(body)
+        ctx.body = new SuccessModel({ ...data }, '注册成功')
+    } catch (e) {
+        ctx.body = new ErrorModel(e.message)
+    }
+})
+
+router.post('/logout', loginCheck, async function (ctx, next) {
+    try {
+        const body = ctx.request.body
+
+        ctx.session.username = null
+        ctx.session.nickname = null
+
+        const message = await logout(body)
+        ctx.body = new SuccessModel(message)
+    } catch (e) {
+        ctx.body = new ErrorModel(e.message)
+    }
 })
 
 // router.get('/session-test', async function (ctx, next) {

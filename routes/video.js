@@ -37,7 +37,7 @@ router.post('/save', loginCheck, async function (ctx, next) {
   ctx.body = new SuccessModel(data)
 })
 
-router.post('/upload', loginCheck, async function (ctx, next) {
+router.post('/upload', async function (ctx, next) {
   // 上传单个文件
   const file = ctx.request.files.file // 获取上传文件
 
