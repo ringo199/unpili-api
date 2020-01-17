@@ -21,20 +21,19 @@ router.get('/list', async function (ctx, next) {
 
 router.get('/oneVideo', async function (ctx, next) {
   let id = ctx.query.id || ''
-
-  const { code, data, message } = await getOneVideo(id)
-  if (code === 0) {
-    ctx.body = new SuccessModel(data, message)
-  } else {
-    ctx.body = new ErrorModel(data, message)
+  try {
+    const data = await getOneVideo(id)
+    ctx.body = new SuccessModel(data, '获取视频资源成功')
+  } catch (e) {
+    ctx.body = new ErrorModel(e.message)
   }
 })
 
 router.post('/save', loginCheck, async function (ctx, next) {
   const body = ctx.request.body
-  const username = ctx.session.username
+  const userId = ctx.session.userId
 
-  const data = await saveVideo(body, username)
+  const data = await saveVideo(body, userId)
   ctx.body = new SuccessModel(data)
 })
 
@@ -42,7 +41,7 @@ router.post('/upload', async function (ctx, next) {
   try {
     // 上传单个文件
     const file = ctx.request.files.file // 获取上传文件
-  
+
     const data = await uploadVideo(file)
     ctx.body = new SuccessModel(data, '上传成功')
   } catch (e) {

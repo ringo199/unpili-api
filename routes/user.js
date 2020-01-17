@@ -1,5 +1,5 @@
 const router = require('koa-router')()
-const { login, register, logout } = require('../controller/user')
+const { login, register, logout, getInfo } = require('../controller/user')
 const { SuccessModel, ErrorModel } = require('../model/resModel')
 const loginCheck = require('../middleware/loginCheck')
 
@@ -7,18 +7,18 @@ router.prefix('/api/user')
 
 router.post('/login', async function (ctx, next) {
     const { username, pwd } = ctx.request.body
-    const data = await login(username, pwd)
-    if (data.username) {
-        // 设置 session
-        ctx.session.username = data.username
-        ctx.session.nickname = data.nickname
+    try {
+        const data = await login(username, pwd)
+        if (data.username) {
+            // 设置 session
+            ctx.session.userId = data.id
+            ctx.session.username = data.username
 
-        ctx.body = new SuccessModel({ ...data }, '登录成功')
-        console.log(ctx.body);
-        
-        return
+            ctx.body = new SuccessModel({ ...data }, '登录成功')        
+        }
+    } catch (e) {
+        ctx.body = new ErrorModel(e.message)
     }
-    ctx.body = new ErrorModel('登录失败')
 })
 
 router.post('/register', async function (ctx, next) {
@@ -36,8 +36,8 @@ router.post('/logout', loginCheck, async function (ctx, next) {
     try {
         const body = ctx.request.body
 
+        ctx.session.userId = null
         ctx.session.username = null
-        ctx.session.nickname = null
 
         const message = await logout(body)
         ctx.body = new SuccessModel(message)
@@ -48,16 +48,10 @@ router.post('/logout', loginCheck, async function (ctx, next) {
 
 router.post('/getInfo', loginCheck, async function (ctx, next) {
     try {
-        const body = ctx.request.body
+        const userId = ctx.session.userId
 
-        if (ctx.session.username == body.username) {
-            ctx.body = new SuccessModel({
-                username: ctx.session.username,
-                nickname: ctx.session.nickname,
-            })
-            return
-        }
-        throw new Error('用户名不匹配')
+        const data = await getInfo(userId)
+        ctx.body = new SuccessModel(data, '获取用户信息成功')
     } catch (e) {
         ctx.body = new ErrorModel(e.message)
     }

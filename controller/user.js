@@ -48,8 +48,20 @@ const logout = async () => {
     return '注销成功'
 }
 
+const getInfo = async (userId) => {
+    let sql = `
+        select
+        username, nickname, avatar, description
+        from users
+        where id = ${userId}
+    `
+    const rows = await exec(sql)
+    return rows[0] || {}
+}
+
 module.exports = {
     login,
     register,
-    logout
+    logout,
+    getInfo
 }

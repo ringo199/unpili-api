@@ -26,30 +26,30 @@ const getList = async (username, keyword) => {
 }
 
 const getOneVideo = async (id) => {
-  let sql = `select * from videos where id='${id}' `
-  // if (author) {
-  //     sql += `and id='${id}' `
-  // }
-  // if (keyword) {
-  //     sql += `and title like '%${keyword}%' `
-  // }
-  sql += `order by createTime desc;`
-  const [data] = await exec(sql)
-
-  return {
-    code: 0,
-    data,
-    message: '查询资源成功'
+  let sql = `
+    select videos.id, title, cover, url,
+    users.id as createUserId,
+    nickname as createNickname
+    from videos
+    left join users on users.id = videos.createUser
+    where videos.id='${id}'
+    order by videos.createTime desc;
+  `
+  try {
+    const [ data ] = await exec(sql)
+    return data
+  } catch (e) {
+    throw new Error(e.message)
   }
 }
 
-const saveVideo =  async (VideoData = {}, username) => {
+const saveVideo =  async (VideoData = {}, userId) => {
   // VideoData 是一个视频对象，包含 title cover url 属性
   const title = xss(VideoData.title)
   // console.log('title is', title)
   const cover = xss(VideoData.cover)
   const url = xss(VideoData.url)
-  const createUser = username
+  const createUser = userId
   const createTime = Date.now()
 
   const sql = `
