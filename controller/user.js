@@ -59,9 +59,29 @@ const getInfo = async (userId) => {
     return rows[0] || {}
 }
 
+const updateInfo = async (userInfo, userId) => {
+    const nickname = escape(userInfo.nickname)
+    const avatar = escape(userInfo.avatar)
+    const description = escape(userInfo.description)
+    let sql = `
+        update users
+        set
+        nickname = ${nickname},
+        avatar = ${avatar},
+        description = ${description}
+        where id = ${userId}
+    `
+    const updateData = await exec(sql)
+    if (updateData.affectedRows > 0) {
+        return
+    }
+    throw new Error('更新用户数据失败')
+}
+
 module.exports = {
     login,
     register,
     logout,
-    getInfo
+    getInfo,
+    updateInfo
 }

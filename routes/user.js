@@ -1,5 +1,5 @@
 const router = require('koa-router')()
-const { login, register, logout, getInfo } = require('../controller/user')
+const { login, register, logout, getInfo, updateInfo } = require('../controller/user')
 const { SuccessModel, ErrorModel } = require('../model/resModel')
 const loginCheck = require('../middleware/loginCheck')
 
@@ -52,6 +52,18 @@ router.post('/getInfo', loginCheck, async function (ctx, next) {
 
         const data = await getInfo(userId)
         ctx.body = new SuccessModel(data, '获取用户信息成功')
+    } catch (e) {
+        ctx.body = new ErrorModel(e.message)
+    }
+})
+
+router.post('/updateInfo', loginCheck, async function (ctx, next) {
+    try {
+        const body = ctx.request.body
+        const userId = ctx.session.userId
+
+        await updateInfo(body, userId)
+        ctx.body = new SuccessModel('更新用户信息成功')
     } catch (e) {
         ctx.body = new ErrorModel(e.message)
     }

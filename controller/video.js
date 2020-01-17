@@ -72,7 +72,7 @@ const uploadVideo = async (file) => {
     const fileName = genFileName(file.name) + '.' + fileType
     let filePath
     if (env === 'dev') {
-      filePath = path.join(__dirname + '../public') + `/${fileName}`
+      filePath = path.join(__dirname, '../public') + `/${fileName}`
     } else {
       filePath = path.join('/home/file') + `/${fileName}`
     }
@@ -80,7 +80,11 @@ const uploadVideo = async (file) => {
     const upStream = fs.createWriteStream(filePath)
     // 可读流通过管道写入可写流
     reader.pipe(upStream)
-    return { path: `http://118.190.36.141/file/${fileName}` }
+    if (env === 'dev') {
+      return { path: `http://127.0.0.1/file/${fileName}` }
+    } else {
+      return { path: `http://118.190.36.141/file/${fileName}` }
+    }
   } catch (e) {
     throw new Error(e)
   }
