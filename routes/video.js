@@ -32,8 +32,9 @@ router.get('/oneVideo', async function (ctx, next) {
 
 router.post('/save', loginCheck, async function (ctx, next) {
   const body = ctx.request.body
+  const username = ctx.session.username
 
-  const data = await saveVideo(body)
+  const data = await saveVideo(body, username)
   ctx.body = new SuccessModel(data)
 })
 

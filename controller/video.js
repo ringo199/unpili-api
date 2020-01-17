@@ -43,17 +43,18 @@ const getOneVideo = async (id) => {
   }
 }
 
-const saveVideo =  async (VideoData = {}) => {
+const saveVideo =  async (VideoData = {}, username) => {
   // VideoData 是一个视频对象，包含 title cover url 属性
   const title = xss(VideoData.title)
   // console.log('title is', title)
   const cover = xss(VideoData.cover)
   const url = xss(VideoData.url)
+  const createUser = username
   const createTime = Date.now()
 
   const sql = `
-      insert into videos (title, cover, url, createTime)
-      values ('${title}', '${cover}', '${url}', '${createTime}');
+      insert into videos (title, cover, url, createUser, createTime)
+      values ('${title}', '${cover}', '${url}', '${createUser}', '${createTime}');
   `
 
   const insertData = await exec(sql)

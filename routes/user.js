@@ -46,6 +46,23 @@ router.post('/logout', loginCheck, async function (ctx, next) {
     }
 })
 
+router.post('/getInfo', loginCheck, async function (ctx, next) {
+    try {
+        const body = ctx.request.body
+
+        if (ctx.session.username == body.username) {
+            ctx.body = new SuccessModel({
+                username: ctx.session.username,
+                nickname: ctx.session.nickname,
+            })
+            return
+        }
+        throw new Error('用户名不匹配')
+    } catch (e) {
+        ctx.body = new ErrorModel(e.message)
+    }
+})
+
 // router.get('/session-test', async function (ctx, next) {
 //   if (ctx.session.viewCount == null) {
 //     ctx.session.viewCount = 0

@@ -1,9 +1,9 @@
-const { ErrorModel } = require('../model/resModel')
+const { NoLoginErrorMadel } = require('../model/resModel')
 
 module.exports = async (ctx, next) => {
     if (ctx.session.username) {
         await next()
         return
     }
-    ctx.body = new ErrorModel('请先登录！')
+    ctx.body = new NoLoginErrorMadel('请先登录！')
 }

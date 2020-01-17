@@ -28,6 +28,13 @@ class ErrorModel extends BaseModel {
     }
 }
 
+class NoLoginErrorMadel extends BaseModel {
+    constructor(data, message) {
+        super(data, message)
+        this.code = 2333
+    }
+}
+
 module.exports = {
     SuccessModel,
     ErrorModel
