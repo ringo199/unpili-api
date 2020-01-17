@@ -37,5 +37,6 @@ class NoLoginErrorMadel extends BaseModel {
 
 module.exports = {
     SuccessModel,
-    ErrorModel
+    ErrorModel,
+    NoLoginErrorMadel
 }

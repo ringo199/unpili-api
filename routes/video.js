@@ -39,14 +39,14 @@ router.post('/save', loginCheck, async function (ctx, next) {
 })
 
 router.post('/upload', async function (ctx, next) {
-  // 上传单个文件
-  const file = ctx.request.files.file // 获取上传文件
-
-  const { code, data, message } = await uploadVideo(file)
-  if (code === 0) {
-    ctx.body = new SuccessModel(data, message)
-  } else {
-    ctx.body = new ErrorModel(data, message)
+  try {
+    // 上传单个文件
+    const file = ctx.request.files.file // 获取上传文件
+  
+    const data = await uploadVideo(file)
+    ctx.body = new SuccessModel(data, '上传成功')
+  } catch (e) {
+    ctx.body = new ErrorModel(e.message)
   }
 })
 
