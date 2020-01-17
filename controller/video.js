@@ -7,10 +7,10 @@ const { genFileName } = require('../utils/cryp')
 
 const env = process.env.NODE_ENV
 
-const getList = async (author, keyword) => {
+const getList = async (username, keyword) => {
     let sql = `select * from videos where 1=1 `
-    if (author) {
-        sql += `and author='${author}' `
+    if (username) {
+        sql += `and createUser='${username}' `
     }
     if (keyword) {
         sql += `and title like '%${keyword}%' `
