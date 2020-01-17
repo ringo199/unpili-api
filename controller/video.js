@@ -73,8 +73,7 @@ const uploadVideo = async (file) => {
     let filePath
     if (env === 'dev') {
       path.join(__dirname + '../public') + `/${fileName}`
-    }
-    if (env === 'production') {
+    } else {
       path.join('/home/file') + `/${fileName}`
     }
     // 创建可写流
