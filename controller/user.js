@@ -14,6 +14,7 @@ const login = async (username, pwd) => {
         where username=${username} and pwd=${pwd}
     `
     const rows = await exec(sql)
+    if (rows.length === 0) throw new Error('登录名或密码错误')
     return rows[0] || {}
 }
 
