@@ -16,6 +16,7 @@ const koaBody = require('koa-body')
 const index = require('./routes/index')
 const video = require('./routes/video')
 const user = require('./routes/user')
+const comment = require('./routes/comment')
 
 const { REDIS_CONF } = require('./conf/db')
 
@@ -86,6 +87,7 @@ app.use(session({
 app.use(index.routes(), index.allowedMethods())
 app.use(video.routes(), video.allowedMethods())
 app.use(user.routes(), user.allowedMethods())
+app.use(comment.routes(), comment.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {

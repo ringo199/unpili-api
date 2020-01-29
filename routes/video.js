@@ -30,11 +30,15 @@ router.get('/oneVideo', async function (ctx, next) {
 })
 
 router.post('/save', loginCheck, async function (ctx, next) {
-  const body = ctx.request.body
-  const userId = ctx.session.userId
+  try {
+    const body = ctx.request.body
+    const userId = ctx.session.userId
 
-  const data = await saveVideo(body, userId)
-  ctx.body = new SuccessModel(data)
+    const data = await saveVideo(body, userId)
+    ctx.body = new SuccessModel(data)
+  } catch (e) {
+    ctx.body = new ErrorModel(e.message)
+  }
 })
 
 router.post('/upload', async function (ctx, next) {
