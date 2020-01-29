@@ -5,7 +5,7 @@ const { ListModel } = require('../model/listModel')
 const getCommentList = async (videoId, pageNo, pageSize) => {
   let sql = `set @commentNo=${(pageNo - 1) * pageSize};`
   await exec(sql)
-  sql = `SELECT COUNT(*) FROM comments where commentVideo=${videoId};`
+  sql = `SELECT COUNT(*) FROM comments where commentVideo=${videoId} and parentComment is null;`
   let total = await exec(sql)
   total = total[0]['COUNT(*)']
   sql = `
@@ -16,7 +16,7 @@ const getCommentList = async (videoId, pageNo, pageSize) => {
     users.nickname as author
     from comments
     left join users on users.id = comments.commentUser
-    where commentVideo=${videoId}
+    where commentVideo=${videoId} and parentComment is null
     order by comments.createTime asc
     limit ${(pageNo - 1) * pageSize}, ${pageSize};
   `
@@ -79,7 +79,7 @@ const saveComment =  async ({ content, videoId, parentCommentId }, userId) => {
 
   const sql = `
       insert into comments (content, parentComment, commentVideo, commentUser, createTime)
-      values ('${content}', '${parentComment}', '${commentVideo}', '${commentUser}', '${createTime}');
+      values ('${content}', ${parentComment ? `${parentComment}` : `NULL`}, '${commentVideo}', '${commentUser}', '${createTime}');
   `
   const insertData = await exec(sql)
   return {
