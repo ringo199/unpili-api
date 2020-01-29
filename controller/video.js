@@ -27,7 +27,7 @@ const getList = async (username, keyword) => {
 
 const getOneVideo = async (id) => {
   let sql = `
-    select videos.id, title, cover, url,
+    select videos.id, title, cover, url, videos.createTime
     avatar as createAvatar,
     description as createDescription,
     users.id as createUserId,
