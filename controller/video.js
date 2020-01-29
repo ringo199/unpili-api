@@ -28,6 +28,8 @@ const getList = async (username, keyword) => {
 const getOneVideo = async (id) => {
   let sql = `
     select videos.id, title, cover, url,
+    avatar as createAvatar,
+    description as createDescription,
     users.id as createUserId,
     nickname as createNickname
     from videos
@@ -81,7 +83,7 @@ const uploadVideo = async (file) => {
     // 可读流通过管道写入可写流
     reader.pipe(upStream)
     if (env === 'dev') {
-      return { path: `http://127.0.0.1/file/${fileName}` }
+      return { path: `http://127.0.0.1:8099/file/${fileName}` }
     } else {
       return { path: `http://118.190.36.141/file/${fileName}` }
     }
