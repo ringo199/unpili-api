@@ -14,6 +14,9 @@ module.exports = async (ctx, next) => {
                 throw new Error('token过于陈旧，请重新获取！')
             }
 
+            // console.log('ctx.session.tokenVer', ctx.session.tokenVer);
+            // console.log('decode.ver', decode.ver);
+
             if (ctx.request.method === 'POST') {
                 ctx.request.body.userId = decode.userId
                 ctx.request.body.username = decode.username

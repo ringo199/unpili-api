@@ -11,7 +11,7 @@ router.post('/login', async function (ctx, next) {
     const { username, pwd } = ctx.request.body
     try {
         const data = await login(username, pwd)
-        const tokenVer = (ctx.session.tokenVer || 0) + 0.1
+        const tokenVer = Number((parseFloat(ctx.session.tokenVer) || 0) + 0.1).toFixed(1)
         if (data.userId) {
             const token = jwt.sign({ ...data, ver: tokenVer }, SECRET, { expiresIn: 24 * 3600 })
             // 设置 token版本
@@ -39,7 +39,7 @@ router.post('/logout', loginCheck, async function (ctx, next) {
     try {
         const body = ctx.request.body
 
-        ctx.session.tokenVer = ctx.session.tokenVer + 0.1
+        ctx.session.tokenVer = Number(parseFloat(ctx.session.tokenVer) + 0.1).toFixed(1)
 
         const message = await logout(body)
         ctx.body = new SuccessModel(message)
