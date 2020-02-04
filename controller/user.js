@@ -10,7 +10,7 @@ const login = async (username, pwd) => {
     pwd = escape(pwd)
 
     const sql = `
-        select id, username, nickname from users
+        select id as userId, username, nickname from users
         where username=${username} and pwd=${pwd}
     `
     const rows = await exec(sql)
